@@ -73,7 +73,10 @@ https://abangpa1ace.tistory.com/entry/Swift-Swift-%EB%AC%B8%EB%B2%95-3-Class%ED%
  
  https://abangpa1ace.tistory.com/entry/Swift-Swift-%EB%AC%B8%EB%B2%95-4-Function%ED%95%A8%EC%88%98
  
- - 타 언어들과 선언 비슷하게 하나, "-> (반환 타입)"을 따로 적어줘야함.
+ - 타 언어들과 선언 비슷하게 하나, "-> (반환 타입)"을 따로 적어줘야하고, 매개 변수마다 타입명 적어줘야함.
+ *
+ 
+ 
  
  
 
