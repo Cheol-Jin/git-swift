@@ -74,11 +74,33 @@ https://abangpa1ace.tistory.com/entry/Swift-Swift-%EB%AC%B8%EB%B2%95-3-Class%ED%
  https://abangpa1ace.tistory.com/entry/Swift-Swift-%EB%AC%B8%EB%B2%95-4-Function%ED%95%A8%EC%88%98
  
  - 타 언어들과 선언 비슷하게 하나, "-> (반환 타입)"을 따로 적어줘야하고, 매개 변수마다 타입명 적어줘야함.
- *
  
+ * 반환값 없는 경우 "-> void"
  
+ - 함수 호출시 매개변수의 이름을 같이 써주어야함. 
+ex) 
+var x = 3
+var y = 7
+let sum = addNums(a: x, b: y)
+
+
  
+반복문(for, while)
+
+https://abangpa1ace.tistory.com/entry/Swift-Swift-문법-5-반복문for-while-작성중
+
+- for-where 반복문 : for 반복문에서 특정 조건에만 로직을 실행하기 위한 문법
  
+for [요소] in [목록(이터레이터)] where [조건] {
+  // 내부로직...
+}
+
+- repeat-while 반복문 : Javascript 및 다른 언어의 do-while 반복문과 유사
+
+- fallthrough 키워드 in switch문 : fallthrough가 포함된 case가 아닌 다음 case를 자동 실행
+
+- switch문 case 조건은 ,(comma)로 연결 가능
+
 
 
 
