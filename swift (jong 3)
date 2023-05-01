@@ -1,0 +1,363 @@
+day 21 : protocol
+
+
+// 약속
+/// **delegate
+/// **able, **ing,
+
+// 프로토콜로 약속
+protocol Naming {
+    // 우리는 이런 변수를 가지고 있을겁니다 라고 약속
+    var name : String { get set }
+    // 우리는 이런 메소드를 가지고 있을겁니다 라고 약속
+    func getName() -> String
+}
+
+//
+struct Friend : Naming{
+    
+    var name: String
+    
+    func getName() -> String {
+        return "내 친구: " + self.name
+    }
+    //프로토콜에서 쓰기로 약속한것 적용
+}
+
+var myFriend = Friend(name: "쩡대리")
+
+myFriend.getName()
+
+
+----------------------------------------
+
+day 22 : protocol inheritance
+
+
+// 이름
+protocol Naming {
+    var name: String { get set }
+    func getName() -> String
+}
+
+// 나이
+protocol Aging {
+    var age: Int { get set }
+}
+
+// 이름, 나이 프로토콜을 상속하는 사용자 프로토콜
+protocol UserNotifiable : Naming, Aging {
+    
+}
+
+// 두 프로토콜을 동시에 준수해야한다.
+// 프로토콜 = 약속
+class MyBestFriend: UserNotifiable {
+    
+    var name: String = ""
+    
+    var age: Int
+    
+    func getName() -> String {
+        return self.name
+    }
+    
+    init(_ name: String, _ age: Int){
+        self.name = name
+        self.age = age
+    }
+    
+}
+
+
+struct MyFriend : UserNotifiable {
+    var name: String
+    
+    func getName() -> String {
+        return self.name
+    }
+    
+    var age: Int
+    //Naming, Aging에 있는 내용들 준수해야함
+}
+
+
+---------------------------------
+
+day 23 : protocol 확장
+
+
+// 이름관련 프로토콜
+// 프로토콜에는 선언만 하고 로직을 담을 수 없다.
+protocol Naming {
+    var lastname: String { get set }
+    var firstname: String { get set }
+    func getName() -> String
+}
+
+// 프로토콜을 확장 익스텐션하면 메소드의 로직을 담을 수 있다.
+extension Naming {
+    func getFullname() -> String{
+        return self.lastname + " " + self.firstname
+    }
+}
+
+struct Friend : Naming {
+    var lastname: String
+    var firstname: String
+    func getName() -> String {
+        return self.lastname
+    }
+}
+
+let myFriend = Friend(lastname: "쩡", firstname: "대리")
+
+myFriend.getName()
+myFriend.getFullname()
+
+
+-------------------------------
+
+day 24: protocol associated type
+
+
+// 애완동물 관련 프로토콜
+protocol PetHaving {
+    // associatedtype 을 통해
+    // 제네릭으로 어떠한 자료형이든 가질수 있다.
+    associatedtype T
+    // 애완동물 배열
+    var pets: [T] { get set }
+    // mutating 을 통해 스트럭트 에서 맴버 변수 값 변경
+    mutating func gotNewPet(_ newPet: T)
+}
+
+// 익스텐션으로 프로토콜의 메소드 로직 구성 가능
+extension PetHaving {
+    mutating func gotNewPet(_ newPet: T){
+        self.pets.append(newPet)
+    }
+}
+// 동물 이넘
+enum Animal {
+    case cat, dog, bird
+}
+
+// 애완동물 프로토콜을 준수하는 친구 스트럭트
+struct Friend : PetHaving {
+    // 애완동물이 Animal, 배열 생성
+    var pets: [Animal] = []
+}
+
+// 애완동물 프로토콜을 준수하는 가족 스트럭트
+struct Family : PetHaving {
+    // 애완동물이 String
+    var pets: [String] = []
+}
+
+var myFriend = Friend()
+
+myFriend.gotNewPet(Animal.bird)
+myFriend.gotNewPet(Animal.cat)
+myFriend.gotNewPet(Animal.dog)
+myFriend.pets
+
+var myFamily = Family()
+myFamily.gotNewPet("거북이")
+myFamily.gotNewPet("토끼")
+myFamily.gotNewPet("강아지")
+myFamily.pets
+
+
+------------------------------
+
+day 25 : 별칭 typealias
+
+
+// typealias 별칭으로 내가 원하는 것을 다르게 부를수 있다.
+
+
+protocol Naming {
+    func getName() -> String
+}
+
+protocol Aging {
+    func getAge() -> Int
+}
+
+// 프로토콜 별칭 설정
+typealias Friendable = Naming & Aging
+
+typealias FullNaming = Naming
+
+//struct Friend : Friendable {
+//
+//}
+
+struct Friend : Friendable { //Naming & Aging
+    
+    var name : String
+    var age : Int
+    
+    func getName() -> String {
+        return self.name
+    }
+    
+    func getAge() -> Int {
+        return self.age
+    }
+}
+
+typealias FriendName = String
+
+var friendName : String = "정대리"
+
+// 자료형, 클래스, 스트럭트, 클로저 등
+// 모두 별칭 설정이 가능하다
+typealias Friends = [Friend]
+
+var myFriendsArray : Friends = [] //자료형 별칭 설정
+
+typealias StringBlock = (String) -> Void //클로저 별칭 설정
+
+// 클로저를 StringBlock 이라는 별칭으로 설정하였다.
+func sayHi(completion : StringBlock){
+    print("안녕하세요?")
+    completion("오늘도 빡코딩 하고 계신가요?")
+}
+
+sayHi(completion: { saying in
+    print("여기서 받음 : ", saying)
+})
+
+typealias MyType = MyClass.MY_TYPE //클래스 별칭 설정
+
+class MyClass {
+    enum MY_TYPE {
+        case DOG
+        case CAT
+        case BIRD
+    }
+    var myType = MyType.DOG
+}
+
+var myClass = MyClass()
+
+myClass.myType = MyType.DOG
+
+print("myClass.myType:", myClass.myType)
+
+//shift + cmd + f >> 전체 검색
+
+
+------------------------------
+
+day 26 : lazy
+
+
+struct Pet {
+    init(){
+        print("Pet 이 생성되었다.")
+    }
+}
+
+struct Friend {
+    
+    var name: String
+    // lazy 키워드로 바로 메모리에 올리지 않고 사용하는 시점에 메모리에 올려서 사용합니다.
+    lazy var pet : Pet = Pet()
+    
+    init(_ name: String){
+        self.name = name
+        print("Friend 가 생성됨")
+    }
+}
+
+var myFriend = Friend("쩡대리")
+
+// 접근했을때 Pet이 생성되서 메모리에 올라가는 걸 볼 수 있습니다.
+myFriend.pet
+
+
+-------------------------------
+
+day 27 : 고차함수 기초
+
+//고차함수: 매개변수로 클로저 이용
+
+func getName(_ name: String) -> String {
+    return "내 이름은 \(name)"
+}
+
+var getNameClosure : (String) -> String //클로저
+
+func sayHello( getName: (String) -> String, name: String) -> String {
+    return getName(name)
+}
+
+let resultOne = sayHello(getName: getName(_:), name: "호롤롤로")
+
+let numbers = [3, 7, 4, -2, 9, -6, 10, 1]
+
+let stringNumbers : [String] = numbers.map { (aNumber: Int) -> String in
+    return "\(aNumber) 입니다."
+}
+
+let evenNumbers : [Int] = numbers.filter { aNumber in
+    return aNumber % 2 == 0
+}
+
+let oddNumbers : [Int] = numbers.filter { aNumber in
+    return aNumber % 2 != 0
+}
+
+
+
+----------------------------
+
+day 29 : private (set)
+
+
+struct MyPet {
+    
+    var title :String = "타이틀없음"
+    
+    private (set) var name :String = "이름없음"
+    //내부에서만 변경 가능하다. 외부에서 변경 불가능
+    
+    mutating func setName(to newName: String){
+        self.name = newName
+    }
+}
+
+var myPet = MyPet()
+//myPet.name
+//myPet.title
+//myPet.title = "호롤롤로"
+//myPet.title
+//myPet.name = "쩡대리" //이걸로는 name 변경 불가.
+myPet.setName(to: "쩡대리") //변경 가능
+myPet.name
+
+
+
+-------------------------------
+
+day 30 : foreach문에서 인덱스를 같이 가져오는 방법
+
+
+//foreach문에서 인덱스도 같이 가져오는 방법
+let myFriendArray : [String] = ["철수", "영희", "수진", "제임스", "마크"]
+
+var friendWithIndex : [String] = []
+
+myFriendArray.forEach{aFriend in
+    print(aFriend)
+}
+
+for (index, aFriend) in myFriendArray.enumerated(){ //aFriend : 배열에 있는 스트링
+    print("index : \(index) , item : \(aFriend)")
+    friendWithIndex.append("\(index).번 \(aFriend)")
+}
+
+
