@@ -1,0 +1,534 @@
+day 11 : 매개변수로서의 클로저
+
+// () -> Void
+//func completion(){
+//
+//}
+
+
+// completion 이라는 클로저를 매개변수로 가지는
+// 메소드 정의
+func sayHi(completion: () -> Void){
+    print("sayHi() called")
+    sleep(2) // 2초 잠깐 멈추기
+    // completion 클로저 실행
+    completion()
+}
+
+// 메소드 호출부 에서 이벤트 종료를 알 수 있다.
+sayHi(completion: {
+    print("2초가 지났다. 1")
+})
+
+sayHi(){
+    print("2초가 지났다. 2")
+}
+
+sayHi{
+    print("2초가 지났다. 3")
+}
+
+
+// (String) -> Void
+//func completion(userInput: String){
+//
+//}
+
+
+// 매개변수로서 데이터를 반환하는 클로저
+func sayHiWithName(completion: (String) -> Void){
+    print("sayHiWithName() called")
+    sleep(2)
+    // 클로저를 실행과 동시에 데이터를 반환
+    completion("오늘도 빡코딩 하고 계신가요?!")
+}
+
+sayHiWithName(completion: { (comment: String) in
+    print("2초 뒤에 그가 말했다! comment: ", comment)
+})
+
+sayHiWithName(completion: { comment in
+    print("2초 뒤에 그가 말했다! comment: ", comment)
+})
+
+sayHiWithName{ comment in
+    print("2초 뒤에 그가 말했다! comment: ", comment)
+}
+
+sayHiWithName{
+    print("2초 뒤에 그가 말했다! comment: ", $0)
+}
+
+// (String, String) -> Void
+//func completion(first: String, second: String){
+//
+//}
+
+// 매개변수로서 데이터를 여러개 반환하는 클로저
+func sayHiWithFullName(completion: (String, String) -> Void){
+    print("sayHiWithFullName() called")
+    sleep(2)
+    // 클로저를 실행과 동시에 데이터를 반환
+    completion("빡코딩", "호롤롤로")
+}
+
+sayHiWithFullName { first, second in
+    print("첫번째: \(first), 두번째: \(second)")
+}
+
+sayHiWithFullName { _, second in
+    print("두번째: \(second)")
+}
+
+sayHiWithFullName{
+    print("첫번째: \($0), 두번째: \($1)")
+}
+
+func sayHiOptional(completion: (() -> Void)? = nil){
+    print("sayHiOptional() called")
+    sleep(2) // 2초 잠깐 멈추기
+    // completion 클로저 실행
+    completion?()
+}
+
+sayHiOptional {
+
+}
+
+sayHiOptional()
+
+sayHiOptional(completion: {
+    print("2초가 지났다.!!")
+})
+
+
+// (Int) -> String
+//func transform(number: Int) -> String {
+//    return "숫자 : \(number)"
+//}
+
+var myNumbers : [Int] = [0, 1, 2, 3, 4, 5]
+
+//var transformedNumbers = myNumbers.map { aNumber in
+//    return "숫자: \(aNumber)"
+//}
+
+//var transformedNumbers = myNumbers.map { (aNumber: Int) -> String in
+//    return "숫자: \(aNumber)"
+//}
+
+//var transformedNumbers = myNumbers.map { (aNumber: Int) -> String in
+//    return "숫자: \(aNumber)"
+//}
+
+var transformedNumbers = myNumbers.map {
+    return "숫자: \($0)"
+}
+
+//var transformedNumbers11 = myNumbers.map
+
+
+-------------------------------------
+
+day 12 : 객체 생성자, 해제자
+
+class MyFriend {
+    
+    var name : String
+    
+    init(_ name: String = "이름없음"){
+        self.name = name
+        print("init() MyFriend 가 메모리에 올라갔다. - ", self.name)
+    }
+    
+    deinit{
+        print("deinit() 메모리에서 사라짐 - ", self.name)
+    }
+    
+    // deinit 검증을 위해 작성
+    var calledTimes = 0
+    let MAX_TIMES = 5
+    
+    static var instancesOfSelf = [MyFriend]()
+    
+    class func destorySelf(object: MyFriend){
+        instancesOfSelf = instancesOfSelf.filter{ (aFriend : MyFriend) in
+            aFriend !== object
+        }
+    }
+    
+    func call(){
+        calledTimes += 1
+        print("called \(calledTimes)")
+        if calledTimes > MAX_TIMES {
+            MyFriend.destorySelf(object: self)
+        }
+    }
+    
+}
+
+var myFriend = MyFriend("쩡대리")
+let aFriend = MyFriend()
+
+// Unmanaged.passUnretained(객체).toOpaque()
+// 로 해당 객체의 메모리 주소를 프린트 할 수 있습니다.
+let anObjectMemoryAddress = Unmanaged.passUnretained(aFriend).toOpaque()
+
+let secondMemorryAddress = Unmanaged.passUnretained(myFriend).toOpaque()
+
+print(anObjectMemoryAddress)
+
+print(secondMemorryAddress)
+
+weak var aFriendToBeDestoried = MyFriend("개발하는 정대리")
+
+if aFriendToBeDestoried != nil {
+    aFriendToBeDestoried!.call()
+} else {
+    print("객체가 더 이상 메모리에 없습니다.")
+}
+
+--------------------------------
+
+day 13 : 상속
+
+class Friend {
+    
+    var name : String
+    
+    init(_ name: String){
+        self.name = name
+    }
+    
+    func sayHi(){
+        print("안녕?! 난 \(self.name) 라고 해")
+    }
+}
+
+class BestFriend : Friend {
+    
+    // override로 부모의 메소드를 가져왔다.
+    override init(_ name: String) {
+        // 상속 받았을 때, 메소드에서 super 로 부모의 메소드 사용해야함
+        super.init("베프 " + name)
+    }
+    
+    override func sayHi() {
+        super.sayHi()
+    }
+    
+    func sayGoodBye(){
+        print("sayGoodBye() called")
+    }
+    
+}
+
+let myFriend = Friend("쩡대리")
+
+myFriend.sayHi()
+
+let myBestFriend = BestFriend("영희")
+
+myBestFriend.sayHi()
+
+myBestFriend.name
+
+
+---------------------------------
+
+day 14 : 딕셔너리
+
+// 키 값으로 한쌍인 딕셔너리 - 사물함과 비슷
+// 키 : 값
+var myFriends = ["bestFriend" : "쩡대리",
+                 "highschool" : "영희"
+                ]
+
+// bestFriend 라는 열쇠로 내용물을 꺼냄
+let myBestFriend = myFriends["bestFriend"]
+
+let highSchoolFriend = myFriends["highschool"]
+
+// 해당 키로 값을 꺼낼때 저장된 값이 없다면 default 로 기본 값을 가져오도록 설정 가능
+let youtubeFriend = myFriends["youtube" , default: "친구없음"]
+
+// 값 추가 및 변경 가능
+myFriends["bestFriend"] = "개발하는 정대리"
+
+let myBF = myFriends["bestFriend"]
+
+myFriends["newFriend"] = "철수"
+
+let newFriend = myFriends["newFriend"]
+
+// updateValue 메소드로 값 추가 및 변경 가능
+myFriends.updateValue("수잔", forKey: "girlFriend")
+
+let girlFriend = myFriends["girlFriend"]
+
+myFriends.updateValue("짹슨", forKey: "bestFriend")
+
+let myBestFriend2 = myFriends["bestFriend"]
+
+// 빈 딕셔너리를 만드는 방법 들
+let emptyDictionary1 : [String : Int] = [:]
+let emptyDictionary2 = [String : Int]()
+
+let myEmptyDictionary : [String : Int] = Dictionary<String, Int>()
+
+myFriends.count
+
+for item in myFriends {
+    print("item : ",item)
+}
+
+--------------------------------
+
+day 15 : 파이널 클래스
+
+final class Friend { //파이널 : 상속이 불가능하게끔 한다
+    
+    var name : String
+    
+    init(name: String){
+        self.name = name
+    }
+}
+
+class BestFriend : Friend { //상속
+    
+    override init(name: String){
+        super.init(name: "베프 " + name)
+    }
+}
+
+let myFriend = Friend(name: "쩡대리")
+let myBestFriend = BestFriend(name: "철수")
+
+
+-------------------------------
+
+day 16 : inout 매개변수
+
+
+
+var title = ""
+
+let jobTitle = "개발자"
+
+//jobTitle = "호롤롤로"
+
+// 매개변수 name 을 받는 메소드
+// _ 언더바를 넣어 메소드 호출시에 이름 안써도 됨
+func sayName(_ name: String){
+    print("안녕?! 난 \(name) 라고 해")
+}
+
+// 메소드에 매개변수로 들어오는 값은 변경 할 수가 없다.
+// 하지만 inout 키워드를 이용하면 값 변경 가능
+func sayHi(_ name: inout String){
+    name = "개발하는 " + name
+    print("안녕?! 난 \(name) 라고 해")
+}
+
+sayName("쩡대리")
+
+// inout 메소드에 들어가는 값은
+// 변경 가능해야 하기 때문에 메소드에
+// 바로 값을 넣지 못하고
+// 변수에 한번 값을 담은 뒤에 넣을 것
+var name = "쩡대리"
+
+// inout 매개변수일때는 해당 변수 앞에
+// &을 달아준다.
+sayHi(&name)
+
+
+----------------------------
+
+day 17 : 에러(error)
+
+
+// 자료형이 Error 인 이넘
+enum MismatchError: Error {
+    case nameMismatch
+    case numberMismatch
+}
+
+// throw 를 통해 에러를 밖으로 던진다
+// 에러를 밖으로 보낸다고 메소드 반환 부분에 throws 표시
+// 에러를 던지는 메소드
+func guessMyName(name input: String) throws { //호출은 name으로, 매개변수로 들어오는 애는 input으로 사용
+    print("guessMyName() called")
+    
+    if input != "쩡대리" {
+        print("틀렸다")
+        throw MismatchError.nameMismatch
+//        return (아래로직 실행하지 않고 함수 끝남, throw도 마찬가지)
+    }
+    print("맞췄다")
+}
+
+
+/// 번호를 맞춘다
+/// - Parameter input: 사용자 숫자 입력
+/// - Returns: bool 맞췄는지 여부
+func guessMyNumber(number input: Int) throws -> Bool {
+    print("guessMyNumber() called")
+    
+    if input != 10 {
+        print("틀렸다")
+        throw MismatchError.numberMismatch
+//        return
+    }
+    print("맞췄다")
+    return true
+}
+
+//try? guessMyName(name: "이대리")
+
+// 해당 메소드에서 에러가 던져져도 에러 처리를 안할려면
+// try에 ?를 붙여준다
+//try? guessMyName(name: "이대리")
+//try! 라고 쓰면 에러가 없을거다 라는 표시 (에러 생기면 문제 발생)
+
+// do 가 영문법에서 강조 라고 생각하면 좋다.
+// do study, do work hard
+// 에러 잡아!
+// do catch 를 이용해 외부로 던져진 에러를 잡아서 에러 처리가 가능
+do {
+   try guessMyName(name: "이대리")
+} catch {
+    print("잡은 에러: \(error)")
+}
+//던져진 에러 잡기
+
+// 에러를 던지는 반환형이 있는 메소드의 경우에는
+// 에러가 던져졌을때 데이터를 반환하지 않고 바로 catch블럭으로 들어가는 것을 볼 수 있다.
+do {
+   let receivedValue = try guessMyNumber(number: 9)
+} catch {
+    print("잡은 에러: \(error)")
+}
+
+
+---------------------------------
+
+day 18 : struct mutating
+
+
+// 클래스의 경우
+class Friend {
+    var name : String
+    
+    func changeName(newName: String){
+        self.name = newName
+    }
+    init(_ name: String){
+        self.name = name
+    }
+}
+
+var myFriend = Friend("쩡대리")
+
+myFriend.changeName(newName: "개발하는 쩡대리")
+
+myFriend.name
+
+// 스트럭트의 경우
+// 맴버 변수 name을 가지는 스트럭트
+// struct 는 참조(메모리 주소)인 클래스와 다르기 때문에
+// (클래스 vs 스트럭트 참조)
+// struct 구조의 맴버 변수 값을 변경(mutate) 하기 위해서는
+// mutating 키워드가 필요
+
+// #짤막상식 mut - 라틴어 change
+struct BestFriend {
+    
+    var name : String
+    
+    mutating func changeName(newName: String){
+        self.name = newName
+//        print("newName: ", newName)
+    }
+    
+//    init(_ name: String){
+//        self.name = name
+//    }
+}
+var myBestFriend = BestFriend(name: "쩡대리")
+
+myBestFriend.changeName(newName: "호롤롤로!")
+
+
+----------------------------------------
+
+day 19 : set
+
+
+// 배열과 비슷한 set
+// 배열처럼 중복으로 값을 넣을 수 없다.
+// 아무리 넣어도 고유한 녀석들만 남는다.
+var myNumberSet : Set<Int> = Set<Int>() //자료형 int
+
+myNumberSet.insert(1)
+myNumberSet.insert(2)
+myNumberSet.insert(2)
+myNumberSet.insert(3)
+myNumberSet.insert(3)
+
+myNumberSet.count
+myNumberSet
+
+// 배열과 다르게 순서가 정해져있지 않다.
+// 매번 출력되는 값들의 순서가 다르다
+for aNumber in myNumberSet {
+    print("aNumber: ", aNumber)
+}
+
+var myBestFriends : [String] = ["철수", "영희", "수지"]
+myBestFriends.contains("수지")
+
+var myFriends : Set<String> = ["철수", "영희", "수지"]
+
+// 그 외에도 콜렉션 [배열, 셋, 딕셔너리, 튜플] 등이 가지고 있는 기본 메소드 들을 제공한다.
+myFriends.contains("쩡대리") // 배열에 해당 원소가 유무 검사
+
+// 수지의 Set 인덱스를 가져온다.
+if let indexToRemove = myFriends.firstIndex(of: "수지") {
+    // 수지를 지운다.
+    print("indexToRemove: ", indexToRemove)
+    myFriends.remove(at: indexToRemove)
+}
+
+if !myFriends.contains("수지") {
+    print("내 친구중에 수지가 없다...")
+}
+
+
+
+---------------------------------------------
+
+day 20 : struct method
+
+
+// struct 에서도 메소드를 가질수 있습니다.
+struct Friend {
+    
+    var age : Int
+    
+    var name : String
+    
+    func sayHello() -> String {
+        print("sayHello()")
+        return "저는 \(age)살, \(name) 입니다."
+    }
+}
+
+var myFriend = Friend(age: 10, name: "쩡대리")
+
+myFriend.sayHello()
+
+
+
+
