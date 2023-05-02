@@ -38,3 +38,360 @@ let myFavoriteNumbers : [String] = numberSet.map { aNumber in
 ------------------------------
 
 day 32 : compactMap
+
+
+
+var myArray = ["one", "2", "three", "4"]
+
+let intArray : [Int?] = myArray.map { item in
+    return Int(item)
+}
+
+print(intArray)
+
+//compactMap 사용시 nil을 반환하지 않으면서, unwrapping까지 해준다
+let onlyIntArray : [Int] = myArray.compactMap { item in
+    return Int(item)
+}
+
+print(onlyIntArray)
+
+
+----------------------------------
+
+day 33 : flatMap
+
+
+//2차원 배열
+let myFriends = [
+    ["철수"],
+    ["영희"],
+    ["제임스", "본드"],
+    ["스티브", "잡스"],
+    ["개발하는", "정대리"]
+]
+
+let flatMapped = myFriends.flatMap { (item: [String]) in
+    return item
+} //flatMap: 납작하게, 1차원 배열로 만들어줌
+
+print(flatMapped)
+
+
+------------------------------------
+
+day 34 : class func vs static func
+
+
+import UIKit
+
+//class, static func는 프로젝트시 보통 유틸 클래스에서 사용
+
+//친구 클래스
+class Friend {
+    
+    //일반적인 메소드
+    func sayHi() {
+        print("안녕?!")
+    }
+    
+    class func sayBye(){
+        print("바이바이~!")
+    }
+    
+    static func sayhoho(){ //final func과 유사. override 안되는 함수
+        print("호홓!!!")
+    }
+}
+
+class BestFriend : Friend {
+    
+    class override func sayBye() {
+        super.sayBye()
+        print("덮어썼음~ 세이 바이")
+    }
+    
+    func sayhoho(){ //override 안됨
+        print("덮어썼음~ sayhoho")
+    }
+    
+}
+
+let myFriend = Friend()
+myFriend.sayHi()
+
+Friend.sayBye()
+
+Friend.sayhoho()
+
+BestFriend.sayBye()
+
+BestFriend.sayhoho()  //override 안됨
+
+
+----------------------------
+
+day 35 : dictionary grouping
+
+//분류가 필요할 때 사용
+enum FriendType {
+    case normal, best
+}
+
+struct Friend {
+    var name : String
+    var type : FriendType
+}
+
+var friendList = [
+    Friend(name: "철수", type: .normal),
+    Friend(name: "영희", type: .best),
+    Friend(name: "제임스", type: .best),
+    Friend(name: "수잔", type: .normal)
+]
+
+//let groupedFriends = Dictionary(grouping: friendList, by: { $0.type })
+let groupedFriends = Dictionary(grouping: friendList, by: { (friend) -> FriendType in
+    return friend.type
+})
+
+print(groupedFriends)
+
+groupedFriends[.normal]
+groupedFriends[.best]
+
+
+------------------------------------
+
+day 36 : 의존성 주입 Dependency Injection
+
+
+// 프로토콜은 약속
+// 뭔가를 강제
+protocol Talking {
+    var saying : String { get set }//가져올수도 있고 값을 설정할 수도 있다
+    func sayHi()
+}
+
+class TalkingImplementation: Talking {
+    var saying: String = " !토크!"
+    
+    func sayHi() {
+        print("호롤롤로!")
+    }
+}
+
+class BestTalk: Talking {
+    var saying: String = "베스트 토크!"
+    
+    func sayHi() {
+        print("허허 잘 지냈어?!?!")
+    }
+}
+
+class OldTalk: Talking {
+    var saying: String = "올드 토크!"
+    func sayHi() {
+        print("어이 올만이여~~")
+    }
+}
+
+class Friend{
+    
+    var talkProvider: Talking
+    
+    var saying: String {
+        get {
+            talkProvider.saying //talkProvider가 가지고있는 saying을 반환
+        }
+    }
+    
+    init(_ talkProvider : Talking){
+        self.talkProvider = talkProvider
+    }
+    
+    func setTalkProvider(_ newProvider : Talking) {
+        self.talkProvider = newProvider
+    }
+    
+    func sayHi(){
+        talkProvider.sayHi()
+    }
+}
+ 
+let myBestFriend = Friend(BestTalk())
+
+myBestFriend.sayHi()
+myBestFriend.saying
+
+let myOldFriend = Friend(OldTalk())
+
+myOldFriend.sayHi()
+myOldFriend.saying
+
+myOldFriend.setTalkProvider(TalkingImplementation())
+
+myOldFriend.sayHi()
+myOldFriend.saying
+
+
+---------------------------------------
+
+day 37 : getter setter
+
+
+class Friend {
+    
+    var name: String
+    var age: Int
+    
+    var detailInfo : String = ""
+    
+    var info : String {
+        get{
+            return "내 친구: \(name) / 나이: \(age)"
+        }
+        set {
+            detailInfo = "info 에서 설정됨 :" + newValue
+        }
+    }
+    
+    init(_ name: String, _ age: Int){
+        self.name = name
+        self.age = age
+    }
+    
+}
+
+let myFriend = Friend("쩡대리", 20)
+
+myFriend.info = "호롤롤로"
+myFriend.detailInfo
+    
+    
+--------------------------------------
+
+day 38 : 코더블
+
+
+//Codable이란? Encodable + Decodable 두 속성 모두 가지고 있는 타입
+//Encodable: 스위프트의 struct구조의 "객체"를 "json형식"으로 변한 하는 것 (Binary Data로 변환)
+//Decodable: "json형식"을 "객체"로 변환
+
+
+let jsonFromServer = """
+{
+    "nick_name": "개발하는 정대리",
+    "job": "유튜바, 개발자",
+    "user_name": "dev_jeongdaeri",
+}
+"""
+
+// de code = 제이슨을 클래스, 스트럭트로 바꾸기 (code를 제이슨으로 기억하면 편함)
+// en code = 제이슨으로 만들기
+//EnCodable & Decodable
+struct User : Decodable {
+    
+    var nickname: String? //optional로 처리하는게 좋음
+    var job: String
+    var myUserName: String
+    
+    enum CodingKeys: String, CodingKey { //인코딩, 디코딩시 사용되는 키
+        case nickname = "nick_name2" //일치하지않으므로 nil 반환
+        case job
+        case myUserName = "user_name"
+    }
+    
+    static func getUserFromJson(_ jsonString: String) -> Self? {//대상은 자신
+        guard let jsonData : Data = jsonString.data(using: .utf8) else { //인코딩 방식 (unwrapping 이용)
+            return nil //데이터가 없는 경우
+        }
+        
+        do { //데이터가 있는 경우
+            let user = try JSONDecoder().decode(User.self, from: jsonData)
+            print("user: \(user)")
+            return user //자기 자신 리턴
+        } catch {
+            print("에러발생: \(error.localizedDescription)")
+            return nil
+        }
+        
+    }
+}
+
+let user = User.getUserFromJson(jsonFromServer)
+
+
+--------------------------------------
+
+day 39 : multithreading closure
+
+
+var greeting = "Hello, playground"
+
+
+func someFunctionWithTrailingClosure(name: String = "", completion: () -> Void){
+    print(#fileID, #function, #line, "- ")
+    completion() //completion이 가장 마지막에 옴
+}
+
+someFunctionWithTrailingClosure(completion: {
+    print(#fileID, #function, #line, "- hohoho 1")
+})
+
+someFunctionWithTrailingClosure {
+    print(#fileID, #function, #line, "- hohoho 2")
+}
+
+
+func someFunctionWithClosures(first: () -> Void,
+                              second: (String) -> Void,
+                              third: (Int) -> Void){
+    print(#fileID, #function, #line, "- ")
+    first()
+    second("호롤롤로")
+    third(3)
+}
+
+someFunctionWithClosures(first: {
+    print("첫번째")
+}, second: {
+    print("두번째: \($0)")
+}, third: {
+    print("세번째: \($0)")
+})
+
+someFunctionWithClosures{
+    print("first")
+} second: { string in
+    print("string: \(string)")
+} third: { number in
+    print("number: \(number)")
+}
+
+
+
+---------------------------------------
+
+day 40 : convenience init 
+
+
+// 추가 생성자
+class Friend{
+    var name: String
+    var age: Int
+    init(name: String){
+        self.name = name
+        self.age = 10
+    }
+    convenience init(name: String, age: Int) { //추가 생성자
+        self.init(name: name)
+        self.age = age
+    }
+}
+
+let myFriend = Friend(name :"쩡대리", age: 100)
+myFriend.age
+
+
+
