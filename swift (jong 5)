@@ -112,3 +112,248 @@ let uniqueNumbers = Set(numbers)
 uniqueNumbers
 var uniqueNumbersArranged = Array(uniqueNumbers) //배열로 바뀜
 uniqueNumbersArranged.sort()
+
+
+--------------------------------------------
+
+day 45 : optional changing
+
+import UIKit
+
+struct Friend {
+    let nickname: String
+    let person: Person?
+}
+struct Person {
+    let name: String
+    let pet: Pet?
+}
+struct Pet{
+    let name: String?
+    let kind: String
+}
+let pet = Pet(name: "개냥이", kind: "고양이")
+let person = Person(name: "정대리", pet: pet)
+let friend = Friend(nickname: "빡코더", person: person)
+
+
+func getPetName() {
+    
+    guard let petName = friend.person?.pet?.name else {
+        print("petName : 없음")
+        return
+    }
+    
+    print("petName : \(petName)") //unwrapping이 된 것이 들어옴
+}
+
+getPetName()
+
+//unwrapping
+if let petName = friend.person?.pet?.name{ //옵셔널 체이닝, 데이터 있으면 들어오고 없으면 들어오지 않음
+    print("petName : \(petName)")
+} else {
+    print("petName : 없음")
+}
+if  let person = friend.person,
+    let pet = person.pet,
+    let petName = pet.name {
+    print("petName : \(petName)")
+} else {
+    print("petName : 없음")
+}
+
+if let person : Person = friend.person {
+    if let pet = person.pet {
+        if let petName = pet.name {
+            print("petName : \(petName)")
+        } else {
+            print("petName : 없습니다")
+        }
+    }
+}
+
+
+
+
+
+
+
+//
+//
+//if let friendPerson = friend.person {
+//    if let pet = friendPerson.pet {
+//        if let petName = pet.name {
+//            print("petName: \(petName)")
+//        }
+//    }
+//}
+//
+//if let petName = friend.person?.pet?.name {
+//    print("petName: \(petName)")
+//} else {
+//    print("펫이름이 없어요")
+//}
+//
+//func getPetName(){
+//    guard let petName = friend.person?.pet?.name else {
+//        print("펫이름이 없어요")
+//        return
+//    }
+//    print("petName: \(petName)")
+//}
+//
+//getPetName()
+//
+//
+
+
+--------------------------------
+
+day 46 : Equatable protocol
+
+
+import UIKit
+
+//두 가지를 비교할 때 같은지 확인하는 기능의 프로토콜
+
+struct Pet : Equatable{ //비교 연산자를 사용할 수 있게 해준다
+    let id: String //비교를 위해 변수 생성
+    let name: String
+    
+    static func == (lhs: Pet, rhs: Pet) -> Bool {
+        return lhs.id == rhs.id //bool이 true가 되면 같다라고 체크를 한다
+    }
+    static func != (lhs: Pet, rhs: Pet) -> Bool {
+        return lhs.id != rhs.id
+    }
+}
+
+let myPet1 = Pet(id: "01", name: "고양이")
+let myPet2 = Pet(id: "02", name: "댕댕이")
+let myPet3 = Pet(id: "01", name: "개냥이")
+
+//if myPet1.id == myPet3.id {
+//    print("두 팻은 같다")
+//}
+if myPet1 == myPet3 {
+    print("두 팻은 같다")
+}
+
+if myPet1 != myPet2 {
+    print("두 팻은 같지 않다")
+}
+
+
+
+
+
+//if myPet1.id == myPet3.id {
+//    print("두 팻은 같다")
+//}
+
+
+------------------------------
+
+day 47 : zip
+
+
+//let friends = ["영희", "철수", "존슨", "제임스"]
+//let pets = ["야옹이", "댕댕이", "찍찍이"]
+//
+//let friendAndPetPairs = zip(friends, pets) //두 배열을 하나로 묶어줌
+//
+//
+//for aPair in friendAndPetPairs {
+//    print("\(aPair.0), \(aPair.1)")
+//}
+let friends = ["영희", "철수", "존슨", "제임스"]
+//let numbers = (1...Int.max) //숫자 제일 큰 수 까지
+let numbers = (1...2)
+
+let friendAndPetPairs = zip(friends, numbers) //둘의 크기가 같아질 때 까지 돌림
+
+for aPair in friendAndPetPairs {
+    print("\(aPair.0), \(aPair.1)")
+}
+
+let myArray = Array(friendAndPetPairs) //콜렉션 변환, 배열 형식으로 뽑을 수 있음
+
+
+-----------------------------
+
+day 48 : static func, final class func
+
+
+class MyClass {
+    
+    // 인스턴스 메소드
+    func saySomething(){
+        print("saySomething")
+    }
+    
+    // 상속이 가능하다
+    class func sayHi() { //메모리에 올리지 않고 사용 가능
+        print("안녕?!")
+    }
+    
+    // 상속 X
+    static func sayHello() { //static = final 같은 기능
+        print("안녕?! 하세요~!")
+    }
+    
+    // 상속 X
+    final class func sayHelloHello() {
+        print("안녕?! 하세요~! 안녕?! 하세요~")
+    }
+}
+
+class MySubClass : MyClass {
+    
+    override class func sayHi() {
+        super.sayHi()
+        print("MySubClass.sayHi - called")
+    }
+}
+
+MySubClass.sayHi()
+
+MyClass.sayHi()
+
+let myObject = MyClass()
+
+myObject.saySomething() //객체 인스턴스 만들어서 사용 >> 인스턴스 메소드
+
+
+---------------------------------
+
+day 49 : Range
+
+
+let myRange = 0...2 // 0, 1, 2
+let mySecondRange = 0..<2 // 0, 1
+let myFriendRange = 2...3 // 0, 1
+let myFriends = ["철수", "영희", "제임스", "수잔"]
+
+//let myThirdRange = 0...Int.max // 0, 1
+for index in mySecondRange {
+    print("index: \(index)")
+}
+
+myFriends[myFriendRange] //제임스, 수잔
+
+if mySecondRange.contains(2) {
+    print("포함 O")
+} else {
+    print("포함 X")
+}
+
+
+--------------------------------
+
+day 50 : Open
+
+- 실제 프로젝트에서 Utils와 같은 파일들을 override해서 사용하기 위해서는 class나 메소드 앞에 
+open이라는 키워드를 사용해아함
+
+- public 키워드 사용도 필요
