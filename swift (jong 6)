@@ -142,3 +142,159 @@ func checkIfSheIsDog(){
 }
 
 checkIfSheIsDog()
+
+
+--------------------------------------
+
+day 56 : 중첩 타입 (Nested Type)
+
+import UIKit
+import Foundation
+
+struct MyPet {
+    enum Kind { //스트럭트 안에 enum타입
+        case cat // kind 이넘의 케이스
+        case dog
+        var value: String {
+            switch self { //자기 자신을 case를 통해 정리
+            case .cat:
+                return "고양이"
+            case .dog:
+                return "강아지"
+            }
+        }
+        var name: String {
+            switch self {
+            case .cat:
+                return "개냥이"
+            case .dog:
+                return "해피"
+            }
+        }
+    }// Kind enum
+    let kind: Kind
+    var description: String {
+        return "우리집 \(kind.value) \(kind.name)"
+    }
+}
+
+let myCat = MyPet(kind: .cat) // MyPet 스트럭트가 가지는 kind 변수
+print(myCat.description) // 우리집 고양이 개냥이
+
+if myCat.kind == MyPet.Kind.cat {
+    print("고양이 입니다")
+}
+
+let myDog = MyPet(kind: .dog)
+print(myDog.description) // 우리집 강아지 해피
+
+
+----------------------------------------
+
+day 57: 프로토콜 옵셔널 처리
+
+import UIKit
+
+@objc protocol Animal { //objc 이용 (두번째 방법)
+    @objc optional func doMoreCry() //optional 키워드가 있음
+}
+
+protocol Pet {
+    func doCry()
+}
+
+extension Pet { //extension으로 확장 (첫번째 방법)
+    func doCry(){} // 아무것도 구현 안함
+}
+
+class Cat : Animal { //optional으로 구현 가능
+}
+
+-----------------------------------------
+
+day 58: Set / isSubset, isSuperset
+
+
+import UIKit
+
+let totalFriends = ["철수", "영희", "수잔", "제임스"] //배열로는 불가, set으로 자료형 바꿔 사용해야함
+let foreignFriends = ["수잔", "제임스"]
+let koreanFriends = ["철수", "영희", "상철"]
+
+let totalFriendsSet = Set(totalFriends) //배열을 set으로 만듬
+let foreignFriendsSet = Set(foreignFriends)
+let koreanFriendsSet = Set(koreanFriends)
+
+// isSubset 내가 속해 있는지 체크
+let isForeignFriendsIsInTotalFriends = foreignFriendsSet.isSubset(of: totalFriendsSet) //true
+
+// isSuperset 내가 포함하고 있는지 체크
+let isTotalFriendsHasForeignFriends = totalFriendsSet.isSuperset(of: foreignFriendsSet) //true
+
+let isTotalFriendsHasKoreanFriends = totalFriendsSet.isSuperset(of: koreanFriendsSet) //false
+
+let isKoreanFriendsIsInTotalFriends = koreanFriendsSet.isSubset(of: totalFriendsSet) //false
+
+
+------------------------------------------
+
+day 59: stride
+
+
+import UIKit
+
+
+// 범위안에서 반복처리
+for countdown in stride(from: 10, to: 0, by: -2) {
+    print("카운트 다운 to: \(countdown)") //10, 8, 6 ...
+}
+print("=======")
+for countdown in stride(from: 5, through: 0, by: -1) {
+    print("카운트 다운 through: \(countdown)") //5, 4, 3 ... through면 0까지 센다. to는 1까지 셈
+}
+
+//for countup in stride(from: 0, to: 5, by: 1) {
+//    print("카운트 업 : \(countup)")
+//}
+
+
+
+extension Array {
+    
+    func chunks(_ chunkSize: Int) -> [[Element]] { //2차원배열로 만들어서 반환
+        return stride(from: 0, to: self.count, by: chunkSize).map{ //map으로 형태를 바꿈
+            return Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
+        }
+    }
+}
+
+let numbers = Array(1...10)
+let chuckedArray = numbers.chunks(2)//[1,2] [3,4] ...
+
+------------------------------------------
+
+day 60 : Dictionary 반복
+
+
+import UIKit
+
+let myFriends : [String: Int] = ["철수" : 19, "수잔": 23, "제임스": 30]
+
+for (name, age) in myFriends {
+    print("이름: \(name), 나이: \(age)")
+}
+
+myFriends.forEach { (name: String, age: Int) in //forEach - 클로저 사용
+    print("이름: \(name), 나이: \(age)")
+}
+
+myFriends.keys.forEach { name in
+    print("이름: \(name)")
+}
+
+myFriends.values.forEach { age in
+    print("나이: \(age)")
+}
+
+
+
