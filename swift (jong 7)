@@ -116,4 +116,152 @@ print(123, "gkgkgk", Animal()) //Any의 대표적인 사용
 ---------------------------------------------------
 
 
-day 67 : 
+day 67 : 패턴 매칭 연산자
+
+
+import UIKit
+
+
+let statusCode = 500
+
+
+if (400...500) ~= statusCode { //contains 함수와 비슷한 역할을 한다, 조건, if, guard, 스위치문 등에 사용가능
+    print("들어옴")
+}
+
+
+---------------------------------------------------
+
+
+day 68 : 커스텀 패턴 매칭 연산자
+
+
+import UIKit
+
+let statusCode = 500
+
+func isValidEmail(_ email: String) -> Bool {
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+
+    let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return emailPred.evaluate(with: email)
+}
+
+func ~= (pattern: NSPredicate, value: String) -> Bool{
+    return pattern.evaluate(with: value)
+}
+
+func ~= (pattern: String, value: Int) -> Bool{ //패턴매칭 연산자 오버로딩
+    return pattern == "\(value)" //문자열로 변환해서 체크한다
+}
+
+
+
+let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+
+if emailPred ~= "ppakcoding" {
+    print("이메일 형식입니다")
+} else {
+    print("이메일 형식이 아닙니다")
+}
+
+switch "ppakcoding@email.com" {
+case emailPred:
+    print("이메일 형식입니다 - switch")
+default:
+    print("이메일 형식이 아닙니다 - switch")
+}
+
+let someValue = 30
+
+if "30" ~= someValue {
+    print("30 입니다")
+} else {
+    print("30 아닙니다")
+}
+
+switch someValue {
+case "30":
+    print("30 입니다 - switch")
+default:
+    print("30 아닙니다 - switch")
+}
+
+if case "30" = someValue {
+    print("30 입니다 - if case")
+} else {
+    print("30 아닙니다 - if case")
+}
+
+//// 조건, if, guard, 스위치
+//if (400...500) ~= statusCode {
+//    print("들어옴")
+//}
+//
+//switch statusCode {
+//case (400...500):
+//    print("들어옴 - switch")
+//default: break
+//}
+//
+//if case (400...500) = statusCode {
+//    print("들어옴 - is case")
+//}
+//
+//
+//func doSomeCheck(status: Int){
+//    guard (400...500) ~= status else {
+//        print("X")
+//        return
+//    }
+//    print("들어왔습니다")
+//}
+//
+//doSomeCheck(status: 500)
+
+
+---------------------------------------------------
+
+day 69 : while문 반복
+
+import UIKit
+
+var count : Int = 0
+
+while count < 5 {
+    
+    count += 1
+//    count = count - 1
+    print("count: \(count)")
+    if count == 3 {
+        break
+    }
+}
+print("완료 \(count)")
+
+
+---------------------------------------------------
+
+day 70 : repeat while 반복
+
+import UIKit
+
+var count : Int = 6
+
+let max = 5
+
+// 일단 실행 -> 조건 체크
+repeat { //다른 언어의 do-while과 같은 역할
+    count += 1
+    print("count: \(count)")
+} while count < max
+print("완료")
+
+//// 조건 먼저 -> 실행
+while count < max {
+    count += 1
+    print("count: \(count)")
+}
+
+print("완료")
